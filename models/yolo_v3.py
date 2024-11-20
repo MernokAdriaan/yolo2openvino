@@ -105,10 +105,10 @@ def yolo_v3(inputs, num_classes, anchors, is_training=False, data_format='NCHW',
                             normalizer_params=batch_norm_params,
                             biases_initializer=None,
                             activation_fn=lambda x: tf.nn.leaky_relu(x, alpha=_LEAKY_RELU)):
-            with tf.variable_scope('darknet-53'):
+            with tf.compat.v1.variable_scope('darknet-53'):
                 route_1, route_2, inputs = darknet53(inputs)
 
-            with tf.variable_scope('yolo-v3'):
+            with tf.compat.v1.variable_scope('yolo-v3'):
                 route, inputs = _yolo_block(inputs, 512, data_format, with_spp)
 
                 detect_1 = _detection_layer(

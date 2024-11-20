@@ -4,8 +4,7 @@ from tensorflow.contrib import slim
 def _conv2d_fixed_padding(inputs, filters, kernel_size, strides=1):
     if strides > 1:
         inputs = _fixed_padding(inputs, kernel_size)
-    inputs = slim.conv2d(inputs, filters, kernel_size, stride=strides,
-                         padding=('SAME' if strides == 1 else 'VALID'))
+    inputs = slim.conv2d(inputs, filters, kernel_size, stride=strides,                         padding=('SAME' if strides == 1 else 'VALID'))
     return inputs
 
 @tf.contrib.framework.add_arg_scope
@@ -30,13 +29,9 @@ def _fixed_padding(inputs, kernel_size, *args, mode='CONSTANT', **kwargs):
     pad_end = pad_total - pad_beg
 
     if kwargs['data_format'] == 'NCHW':
-        padded_inputs = tf.pad(inputs, [[0, 0], [0, 0],
-                                        [pad_beg, pad_end],
-                                        [pad_beg, pad_end]],
-                               mode=mode)
+        padded_inputs = tf.pad(inputs, [[0, 0], [0, 0], [pad_beg, pad_end], [pad_beg, pad_end]], mode=mode)
     else:
-        padded_inputs = tf.pad(inputs, [[0, 0], [pad_beg, pad_end],
-                                        [pad_beg, pad_end], [0, 0]], mode=mode)
+        padded_inputs = tf.pad(inputs, [[0, 0], [pad_beg, pad_end],                                        [pad_beg, pad_end], [0, 0]], mode=mode)
     return padded_inputs
 
 def _get_size(shape, data_format):
@@ -44,13 +39,9 @@ def _get_size(shape, data_format):
         shape = shape[1:]
     return shape[1:3] if data_format == 'NCHW' else shape[0:2]
 
-
 def _detection_layer(inputs, num_classes, anchors, img_size, data_format):
     num_anchors = len(anchors)
-    predictions = slim.conv2d(inputs, num_anchors * (5 + num_classes), 1,
-                              stride=1, normalizer_fn=None,
-                              activation_fn=None,
-                              biases_initializer=tf.zeros_initializer())
+    predictions = slim.conv2d(inputs, num_anchors * (5 + num_classes), 1, stride=1, normalizer_fn=None, activation_fn=None, biases_initializer=tf.zeros_initializer())
 
     shape = predictions.get_shape().as_list()
     grid_size = _get_size(shape, data_format)
@@ -58,8 +49,7 @@ def _detection_layer(inputs, num_classes, anchors, img_size, data_format):
     bbox_attrs = 5 + num_classes
 
     if data_format == 'NCHW':
-        predictions = tf.reshape(
-            predictions, [-1, num_anchors * bbox_attrs, dim])
+        predictions = tf.reshape(predictions, [-1, num_anchors * bbox_attrs, dim])
         predictions = tf.transpose(predictions, [0, 2, 1])
 
     predictions = tf.reshape(predictions, [-1, num_anchors * dim, bbox_attrs])
@@ -69,7 +59,7 @@ def _detection_layer(inputs, num_classes, anchors, img_size, data_format):
     anchors = [(a[0] / stride[0], a[1] / stride[1]) for a in anchors]
 
     box_centers, box_sizes, confidence, classes = tf.split(
-        predictions, [2, 2, 1, num_classes], axis=-1)
+            predictions, [2, 2, 1, num_classes], axis=-1)
 
     box_centers = tf.nn.sigmoid(box_centers)
     confidence = tf.nn.sigmoid(confidence)
@@ -98,10 +88,9 @@ def _detection_layer(inputs, num_classes, anchors, img_size, data_format):
     return predictions
 
 def _upsample(inputs, out_shape, data_format='NCHW'):
-    # tf.image.resize_nearest_neighbor accepts input in format NHWC
+    # tf.compat.v1.image.resize_nearest_neighbor accepts input in format NHWC
     if data_format == 'NCHW':
         inputs = tf.transpose(inputs, [0, 2, 3, 1])
-
     if data_format == 'NCHW':
         new_height = out_shape[2]
         new_width = out_shape[3]
@@ -109,7 +98,7 @@ def _upsample(inputs, out_shape, data_format='NCHW'):
         new_height = out_shape[1]
         new_width = out_shape[2]
 
-    inputs = tf.image.resize_nearest_neighbor(inputs, (new_height, new_width))
+    inputs = tf.compat.v1.image.resize_nearest_neighbor(inputs, (new_height, new_width))
 
     # back to NCHW if needed
     if data_format == 'NCHW':

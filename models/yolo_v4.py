@@ -147,14 +147,14 @@ def yolo_v4(inputs, num_classes, anchors, is_training=False, data_format='NCHW',
 
             #weights_regularizer=slim.l2_regularizer(weight_decay)
             #weights_initializer=tf.truncated_normal_initializer(0.0, 0.01)
-        with tf.variable_scope('cspdarknet-53'):
+        with tf.compat.v1.variable_scope('cspdarknet-53'):
             route_1, route_2, route_3 = csp_darknet53(inputs,data_format,batch_norm_params)
 
         with slim.arg_scope([slim.conv2d], normalizer_fn=slim.batch_norm,
                             normalizer_params=batch_norm_params,
                             biases_initializer=None,
                             activation_fn=lambda x: tf.nn.leaky_relu(x, alpha=_LEAKY_RELU)):
-            with tf.variable_scope('yolo-v4'):
+            with tf.compat.v1.variable_scope('yolo-v4'):
                 #features of y1
                 net = _conv2d_fixed_padding(route_1,256,kernel_size=3)
                 detect_1 = _detection_layer(

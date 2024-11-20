@@ -67,7 +67,7 @@ def yolo_v4_tiny(inputs, num_classes, anchors, is_training=False, data_format='N
                                 biases_initializer=None,
                                 activation_fn=lambda x: tf.nn.leaky_relu(x, alpha=_LEAKY_RELU)):
 
-                with tf.variable_scope('yolo-v4-tiny'):
+                with tf.compat.v1.variable_scope('yolo-v4-tiny'):
                     #CSPDARKENT BEGIN
                     net = _conv2d_fixed_padding(inputs,32,kernel_size=3,strides=2)
 

@@ -1,3 +1,5 @@
 tensorflow==1.14.0
 numpy==1.16.6
 blobconverter==1.2.7
+protobuf<=3.20
+Pillow==9.5.0

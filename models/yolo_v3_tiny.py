@@ -48,7 +48,7 @@ def yolo_v3_tiny(inputs, num_classes, anchors, is_training=False, data_format='N
                                 biases_initializer=None,
                                 activation_fn=lambda x: tf.nn.leaky_relu(x, alpha=_LEAKY_RELU)):
 
-                with tf.variable_scope('yolo-v3-tiny'):
+                with tf.compat.v1.variable_scope('yolo-v3-tiny'):
                     for i in range(6):
                         inputs = _conv2d_fixed_padding(
                             inputs, 16 * pow(2, i), 3)
